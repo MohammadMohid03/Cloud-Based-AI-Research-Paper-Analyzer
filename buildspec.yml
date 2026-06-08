@@ -3,9 +3,15 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo "Preparing backend files for Elastic Beanstalk deployment"
+      - echo "Preparing backend for Elastic Beanstalk"
+      - cd backend
+      - go mod download
+      - go build -o server ./cmd/server
+      - mkdir -p ../deploy
+      - cp server ../deploy/server
+      - cp Dockerfile.runtime ../deploy/Dockerfile
 
 artifacts:
   files:
     - '**/*'
-  base-directory: backend
+  base-directory: deploy
