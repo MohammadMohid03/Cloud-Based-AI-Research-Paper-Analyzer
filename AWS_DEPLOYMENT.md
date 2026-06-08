@@ -439,10 +439,12 @@ JWT_SECRET=<strong-random-secret>
 AI_PROVIDER=bedrock
 STORAGE_PROVIDER=s3
 AWS_REGION=us-east-1
-S3_BUCKET=rpa-paper-uploads-<account-id>
+S3_BUCKET_NAME=rpa-paper-uploads-<account-id>
 BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0
-SERVER_PORT=8080
-ALLOWED_ORIGINS=https://app.example.com
+PORT=8080
+CORS_ALLOWED_ORIGINS=https://app.example.com
+GIN_MODE=release
+SEED_DATA=false
 ENVEOF
 
 # Build and run backend only (database is on RDS)
@@ -518,10 +520,12 @@ eb create rpa-backend-prod \
     JWT_SECRET=<strong-secret>,\
     AI_PROVIDER=bedrock,\
     STORAGE_PROVIDER=s3,\
-    S3_BUCKET=rpa-paper-uploads-<account-id>,\
+    S3_BUCKET_NAME=rpa-paper-uploads-<account-id>,\
     BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0,\
-    SERVER_PORT=8080,\
-    ALLOWED_ORIGINS=https://app.example.com
+    PORT=8080,\
+    CORS_ALLOWED_ORIGINS=https://app.example.com,\
+    GIN_MODE=release,\
+    SEED_DATA=false
 ```
 
 #### 6B.2 Deploy Updates

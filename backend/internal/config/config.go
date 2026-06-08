@@ -31,11 +31,11 @@ type Config struct {
 	JWTExpiryHours int    // Token expiration time in hours
 
 	// AI provider settings
-	AIProvider    string // "mock" or "bedrock"
-	BedrockModel  string // AWS Bedrock model ID
-	AWSRegion     string // AWS region
-	AWSAccessKey  string // AWS access key ID (optional, can use IAM roles)
-	AWSSecretKey  string // AWS secret access key
+	AIProvider   string // "mock" or "bedrock"
+	BedrockModel string // AWS Bedrock model ID
+	AWSRegion    string // AWS region
+	AWSAccessKey string // AWS access key ID (optional, can use IAM roles)
+	AWSSecretKey string // AWS secret access key
 
 	// Storage settings
 	StorageProvider string // "local" or "s3"
@@ -65,11 +65,11 @@ func Load() *Config {
 		jwtExpiry = 72 // Default to 72 hours if parsing fails
 	}
 
-	// Parse seed data flag
-	seedData := strings.ToLower(getEnv("SEED_DATA", "true")) == "true"
+	// Parse seed data flag. Keep this disabled by default for deployed environments.
+	seedData := strings.ToLower(getEnv("SEED_DATA", "false")) == "true"
 
 	// Parse CORS origins from comma-separated string
-	corsOrigins := strings.Split(getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173"), ",")
+	corsOrigins := strings.Split(getEnvAny([]string{"CORS_ALLOWED_ORIGINS", "ALLOWED_ORIGINS"}, "http://localhost:3000,http://localhost:5173"), ",")
 	// Trim whitespace from each origin
 	for i, origin := range corsOrigins {
 		corsOrigins[i] = strings.TrimSpace(origin)
@@ -77,7 +77,7 @@ func Load() *Config {
 
 	return &Config{
 		// Server
-		Port:    getEnv("PORT", "8080"),
+		Port:    getEnvAny([]string{"PORT", "SERVER_PORT"}, "8080"),
 		GinMode: getEnv("GIN_MODE", "debug"),
 
 		// Database
@@ -101,7 +101,7 @@ func Load() *Config {
 
 		// Storage
 		StorageProvider: getEnv("STORAGE_PROVIDER", "local"),
-		S3BucketName:    getEnv("S3_BUCKET_NAME", "research-paper-analyzer-uploads"),
+		S3BucketName:    getEnvAny([]string{"S3_BUCKET_NAME", "S3_BUCKET"}, "research-paper-analyzer-uploads"),
 		UploadDir:       getEnv("UPLOAD_DIR", "./uploads"),
 
 		// CORS
@@ -117,6 +117,15 @@ func Load() *Config {
 func getEnv(key, fallback string) string {
 	if value, exists := os.LookupEnv(key); exists && value != "" {
 		return value
+	}
+	return fallback
+}
+
+func getEnvAny(keys []string, fallback string) string {
+	for _, key := range keys {
+		if value, exists := os.LookupEnv(key); exists && value != "" {
+			return value
+		}
 	}
 	return fallback
 }

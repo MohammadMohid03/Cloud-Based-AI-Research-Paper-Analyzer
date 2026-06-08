@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY server .
 
+RUN mkdir -p uploads
+
 EXPOSE 8080
 
 CMD ["./server"]
