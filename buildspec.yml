@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Preparing backend files for Elastic Beanstalk deployment"
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: backend
