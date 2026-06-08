@@ -6,10 +6,12 @@ phases:
       - echo "Preparing backend for Elastic Beanstalk"
       - cd backend
       - go mod download
-      - go build -o server ./cmd/server
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o server ./cmd/server
+      - rm -rf ../deploy
       - mkdir -p ../deploy
       - cp server ../deploy/server
       - cp Dockerfile.runtime ../deploy/Dockerfile
+      - if [ -d .ebextensions ]; then cp -r .ebextensions ../deploy/.ebextensions; fi
 
 artifacts:
   files:
